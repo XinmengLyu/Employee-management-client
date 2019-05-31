@@ -101,9 +101,9 @@ export const getList = ({sch, fld, st}) => {
 
 export const addPage = () => {
     return (dispatch, getState) => {
-        dispatch(getListRequest());
         const { hasMore, search, field, sort, currentPage } = getState().list;
         if (hasMore) {
+            dispatch(getListRequest());
             const url = "http://localhost:8080/api/employees?"
                 + (search ? "search=" + search + "&&" : "")
                 + (field ? "field" + field + "&&" : "")

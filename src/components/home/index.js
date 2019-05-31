@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Divider, Input, Typography, Spin } from 'antd';
+import { Avatar, Button, Divider, Input, Typography, Spin, message } from 'antd';
 import { InfinityTable } from 'antd-table-infinity';
 import 'antd/dist/antd.css';
 import { connect } from 'react-redux';
@@ -13,6 +13,16 @@ class Home extends React.Component {
     //define columns for the table
     columns = () => (
         [
+            {
+                title: "",
+                dataIndex: "avatar",
+                key: "avatar",
+                width: 70,
+                aligh: "right",
+                render: (text, record) => (
+                    <Avatar src={record.avatar}/>
+                )
+            },
             {
                 title: "Name",
                 dataIndex: "name",
@@ -164,6 +174,15 @@ class Home extends React.Component {
         }
     }
 
+    handleFetch = () => {
+        const { hasMore, addPage} = this.props;
+        if(hasMore){
+            addPage();
+        }else{
+            message.info("This is the end of the table");
+        }
+    }
+
     loadMoreContent = () => (
         <div
             style={{
@@ -178,7 +197,7 @@ class Home extends React.Component {
     );
 
     render() {
-        const { isLoading, err, getList, employees, search, addPage } = this.props;
+        const { isLoading, err, getList, employees, search } = this.props;
         if (err) {
             //window.setTimeout(getList, 5000);
             return (<Typography.Title>There has been an error. This page will refresh shortly.</Typography.Title>);
@@ -197,7 +216,7 @@ class Home extends React.Component {
                     scroll={{ y: 450 }}
                     loading={isLoading}
                     loadingIndicator={this.loadMoreContent}
-                    onFetch={addPage}
+                    onFetch={this.handleFetch}
                     footer={() => <Button type="primary" icon="form" onClick={this.handleClickAdd} >Create New Employee</Button>}
                     bordered
                 />
