@@ -76,7 +76,7 @@ const updateDBFail = (err) => {
     }
 };
 
-//thunk call for list
+//thunk calls for list
 export const getList = ({sch, fld, st}) => {
     return (dispatch, getState) => {
         dispatch(getListRequest());
@@ -130,7 +130,30 @@ export const addEmployee = (employee, history) => {
             })
             .catch(err => {
                 dispatch(updateDBFail(err));
-                //window.setTimeout(() => history.push("/"), 5000);
+                window.setTimeout(() => history.push("/"), 5000);
             });
     }
+};
+
+export const deleteEmployee = (id) => {
+    return (dispatch, getState) => {
+        dispatch(getListRequest());
+        axios.delete(`http://localhost:8080/api/employees/${id}`)
+            .then((res) => {
+                const { search, field, sort } = getState().list;
+                const url = "http://localhost:8080/api/employees?"
+                    + (search ? "search=" + search + "&&" : "")
+                    + (field ? "field=" + field + "&&" : "")
+                    + (sort ? "sort=" + sort : "");
+                return axios.get(url)
+            })
+            .then(res => {
+                console.log("res.data", res.data);
+                res.data.docs = decorateData(res.data.docs);
+                dispatch(getListSuccess(res.data));
+            })
+            .catch(err => {
+                dispatch(getListFail(err));
+            });
+    };
 };

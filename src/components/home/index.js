@@ -3,7 +3,7 @@ import { Avatar, Button, Divider, Input, Typography, Spin, message } from 'antd'
 import { InfinityTable } from 'antd-table-infinity';
 import 'antd/dist/antd.css';
 import { connect } from 'react-redux';
-import { getList, addPage } from '../../redux/actions';
+import { getList, addPage, deleteEmployee } from '../../redux/actions';
 
 class Home extends React.Component {
     componentDidMount() {
@@ -151,17 +151,20 @@ class Home extends React.Component {
         ]
     );
 
-    handleDelete = (record) => { console.log("handleDelete called: ", record); }
+    handleDelete = (record) => { 
+        console.log("handleDelete called: ", record); 
+        this.props.deleteEmployee(record._id);
+    };
 
     handleClickAdd = () => { 
         console.log("handleClickAdd called: "); 
         this.props.history.push("/add");
-    }
+    };
 
     handleSearchChange = e => {
         const { field, sort } = this.props;
         this.props.getList({ sch: e.target.value, fld: field, st: sort });
-    }
+    };
 
     handleSort = column => {
         //console.log("handleSort called: ",column);
@@ -175,7 +178,7 @@ class Home extends React.Component {
         } else if (sort === "desc") {
             getList({ sch: search, fld: "", st: "" });
         }
-    }
+    };
 
     handleFetch = () => {
         const { hasMore, addPage} = this.props;
@@ -184,7 +187,7 @@ class Home extends React.Component {
         }else{
             message.info("This is the end of the table");
         }
-    }
+    };
 
     loadMoreContent = () => (
         <div
@@ -225,7 +228,7 @@ class Home extends React.Component {
                 />
             </div>
         );
-    }
+    };
 }
 
 const mapStateToProps = state => (
@@ -239,7 +242,7 @@ const mapStateToProps = state => (
         field: state.list.field,
         sort: state.list.sort,
     }
-)
+);
 
 const mapDispatchToProps = dispatch => (
     {
@@ -248,8 +251,11 @@ const mapDispatchToProps = dispatch => (
         },
         addPage: () => {
             dispatch(addPage());
+        },
+        deleteEmployee: (id) => {
+            dispatch(deleteEmployee(id));
         }
     }
-)
+);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
