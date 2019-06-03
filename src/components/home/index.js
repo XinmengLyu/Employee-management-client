@@ -117,7 +117,7 @@ class Home extends React.Component {
                 key: "manager",
                 width: 250,
                 render: (text, record) => (
-                    <a href="">{record.manager}</a>
+                    <a href="">{record.manager ? record.manager.name : ""}</a>
                 )
             },
             {
@@ -153,7 +153,10 @@ class Home extends React.Component {
 
     handleDelete = (record) => { console.log("handleDelete called: ", record); }
 
-    handleClickAdd = () => { console.log("handleClickAdd called: "); }
+    handleClickAdd = () => { 
+        console.log("handleClickAdd called: "); 
+        this.props.history.push("/add");
+    }
 
     handleSearchChange = e => {
         const { field, sort } = this.props;
@@ -215,7 +218,7 @@ class Home extends React.Component {
                     pageSize={10}
                     scroll={{ y: 450 }}
                     loading={isLoading}
-                    loadingIndicator={this.loadMoreContent}
+                    loadingIndicator={this.loadMoreContent()}
                     onFetch={this.handleFetch}
                     footer={() => <Button type="primary" icon="form" onClick={this.handleClickAdd} >Create New Employee</Button>}
                     bordered

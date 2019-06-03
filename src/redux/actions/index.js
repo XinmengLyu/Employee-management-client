@@ -57,6 +57,25 @@ const loadAnotherPage = (data) => {
     }
 };
 
+const updateDBRequest = () => {
+    return {
+        type: "UPDATE_DB_REQUEST",
+    }
+};
+
+const updateDBSuccess = () => {
+    return {
+        type: "UPDATE_DB_SUCCCESS"
+    }
+};
+
+const updateDBFail = (err) => {
+    return {
+        type: "UPADTE_DB_FAIL",
+        err: err,
+    }
+};
+
 //thunk call for list
 export const getList = ({sch, fld, st}) => {
     return (dispatch, getState) => {
@@ -79,26 +98,6 @@ export const getList = ({sch, fld, st}) => {
     };
 };
 
-// const updateList = (search = "", field = "", sort = "") => {
-//     return (dispatch, getState) => {
-//         dispatch(getListRequest());
-//         if (search) dispatch(updateSearch(search));
-//         if (field && sort) dispatch(updateSort(field, sort));
-//         const { search, field, sort } = getState().list; const url = "http://localhost:8080/api/employees?"
-//             + (search ? "search=" + search + "&&" : "")
-//             + (field ? "field=" + field + "&&" : "")
-//             + (sort ? "sort=" + sort : "");
-//         axios.get(url)
-//             .then(result => {
-//                 result.docs = decorateData(result.docs);
-//                 dispatch(getListSuccess(result));
-//             })
-//             .catch(err => {
-//                 dispatch(getListFail(err));
-//             });
-//     };
-// };
-
 export const addPage = () => {
     return (dispatch, getState) => {
         const { hasMore, search, field, sort, currentPage } = getState().list;
@@ -119,4 +118,19 @@ export const addPage = () => {
                 });
         }
     };
+};
+
+export const addEmployee = (employee, history) => {
+    return (dispatch) => {
+        dispatch(updateDBRequest());
+        axios.post("http://localhost:8080/api/employees", { ...employee })
+            .then(res => {
+                dispatch(updateDBSuccess());
+                history.push('/');
+            })
+            .catch(err => {
+                dispatch(updateDBFail(err));
+                //window.setTimeout(() => history.push("/"), 5000);
+            });
+    }
 };

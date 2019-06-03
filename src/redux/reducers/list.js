@@ -60,6 +60,27 @@ const list = (state = initState, action) => {
                 err: null,
             }
         }
+        case "UPDATE_DB_REQUEST": {
+            return {
+                ...state,
+                isLoading: true,
+                err: null,
+            }
+        }
+        case "UPDATE_DB_SUCCCESS": {
+            return {
+                ...state,
+                isLoading: false,
+                err: null
+            }
+        }
+        case "UPADTE_DB_FAIL": {
+            return {
+                ...state,
+                isLoading: false,
+                err: action.err,
+            }
+        }
         default: {
             return state;
         }

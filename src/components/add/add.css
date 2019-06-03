@@ -1,0 +1,32 @@
+.container {
+  position: relative;
+}
+
+.form-container {
+  position: relative;
+  margin-left: 50px;
+}
+
+.form-avatar {
+  display: inline-block;
+  position: absolute;
+}
+
+.form-text {
+  display: inline-block;
+  position: absolute;
+  left: 300px;
+  width: 500px;
+}
+
+.form-button {
+  position: relative;
+  top: 830px;
+  padding-left: 300px;
+}
+
+.avatar-upload > .ant-upload {
+    height: 256px;
+    width: 256px;
+  }
+  
