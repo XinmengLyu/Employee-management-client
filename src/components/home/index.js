@@ -2,12 +2,15 @@ import React from 'react';
 import { Avatar, Button, Divider, Input, Typography, Spin, message } from 'antd';
 import { InfinityTable } from 'antd-table-infinity';
 import 'antd/dist/antd.css';
+import '../style.css';
 import { connect } from 'react-redux';
 import { getList, addPage, deleteEmployee } from '../../redux/actions';
 
 class Home extends React.Component {
     componentDidMount() {
-        this.props.getList();
+        console.log("componentDidMount() called: ", this.props);
+        const { search, field, sort, getList } = this.props;
+        getList({ sch: search, fld: field, st: sort });
     }
 
     //define columns for the table
@@ -20,7 +23,7 @@ class Home extends React.Component {
                 width: 70,
                 aligh: "right",
                 render: (text, record) => (
-                    <Avatar src={record.avatar}/>
+                    <Avatar src={record.avatar} />
                 )
             },
             {
@@ -78,7 +81,7 @@ class Home extends React.Component {
                     }
                 ),
                 render: (text, record) => (
-                    <a href="">{record.office_phone}</a>
+                    <a href={`tel:${record.office_phone}`}>{record.office_phone}</a>
                 )
             },
             {
@@ -93,7 +96,7 @@ class Home extends React.Component {
                     }
                 ),
                 render: (text, record) => (
-                    <a href="">{record.cell_phone}</a>
+                    <a href={`tel:${record.cell_phone}`}>{record.cell_phone}</a>
                 )
             },
             {
@@ -108,7 +111,7 @@ class Home extends React.Component {
                     }
                 ),
                 render: (text, record) => (
-                    <a href="">{record.email}</a>
+                    <a href={`mailto:${record.email}`}>{record.email}</a>
                 )
             },
             {
@@ -117,7 +120,7 @@ class Home extends React.Component {
                 key: "manager",
                 width: 250,
                 render: (text, record) => (
-                    <a href="">{record.manager ? record.manager.name : ""}</a>
+                    record.manager ? <Button type="link" onClick={() => this.getManager(record.manager._id)}>{record.manager.name}</Button> : ""
                 )
             },
             {
@@ -131,10 +134,12 @@ class Home extends React.Component {
                         onClick: () => this.handleSort(column),
                     }
                 ),
-                render: (text, record) => {
-                    //console.log("table render : # of dr =>", record);
-                    return <Button type="link" onClick={() => { }}>{record.direct_report}</Button>
-                }
+                render: (text, record) => (
+                    record.direct_report? 
+                        <Button type="link" onClick={() => this.getDR(record._id)} style={{ paddingLeft: "0" }} >
+                            {record.direct_report}
+                        </Button> : 0
+                )
             },
             {
                 title: 'Action',
@@ -142,7 +147,7 @@ class Home extends React.Component {
                 width: 200,
                 render: (text, record) => (
                     <span>
-                        <a href="">Edit</a>
+                        <Button type="link" style={{ paddingRight: "0", paddingLeft: "0" }} onClick={() => this.handleClickEdit(record)} >Edit</Button>
                         <Divider type="vertical" />
                         <Button type="link" style={{ color: "red", paddingLeft: "0" }} onClick={() => this.handleDelete(record)} >Delete</Button>
                     </span>
@@ -151,19 +156,33 @@ class Home extends React.Component {
         ]
     );
 
-    handleDelete = (record) => { 
-        console.log("handleDelete called: ", record); 
+    handleDelete = (record) => {
+        //console.log("handleDelete called: ", record);
         this.props.deleteEmployee(record._id);
     };
 
-    handleClickAdd = () => { 
-        console.log("handleClickAdd called: "); 
+    handleClickEdit = (record) => {
+        this.props.history.push(`/edit/${record._id}`);
+    };
+
+    handleClickAdd = () => {
+        //console.log("handleClickAdd called: ");
         this.props.history.push("/add");
     };
 
     handleSearchChange = e => {
-        const { field, sort } = this.props;
-        this.props.getList({ sch: e.target.value, fld: field, st: sort });
+        const { field, sort, getList } = this.props;
+        getList({ sch: e.target.value, fld: field, st: sort });
+    };
+
+    getManager = (id) => {
+        const {search, field, sort, getList} = this.props;
+        getList({ sch: search, fld: field, st: sort, mng: id});
+    };
+
+    getDR = (id) => {
+        const {search, field, sort, getList} = this.props;
+        getList({ sch: search, fld: field, st: sort, d: id});
     };
 
     handleSort = column => {
@@ -180,11 +199,15 @@ class Home extends React.Component {
         }
     };
 
+    handleReset = () => {
+        this.props.getList();
+    };
+
     handleFetch = () => {
-        const { hasMore, addPage} = this.props;
-        if(hasMore){
+        const { hasMore, addPage } = this.props;
+        if (hasMore) {
             addPage();
-        }else{
+        } else {
             message.info("This is the end of the table");
         }
     };
@@ -205,14 +228,15 @@ class Home extends React.Component {
     render() {
         const { isLoading, err, getList, employees, search } = this.props;
         if (err) {
-            //window.setTimeout(getList, 5000);
+            window.setTimeout(getList, 5000);
             return (<Typography.Title>There has been an error. This page will refresh shortly.</Typography.Title>);
         } else return (
             <div className="table-container">
                 <Typography.Title>Employees</Typography.Title>
                 <Typography.Text>
                     Search:
-                <Input value={search} onChange={this.handleSearchChange} allowClear style={{ width: "120px", margin: "10px 5px" }} />
+                    <Input value={search} onChange={this.handleSearchChange} allowClear style={{ width: "120px", margin: "10px 5px" }} />
+                    <Button type="primary" onClick={this.handleReset} style={{float: "right"}} > Reset</Button>
                 </Typography.Text>
                 <InfinityTable
                     key="key"

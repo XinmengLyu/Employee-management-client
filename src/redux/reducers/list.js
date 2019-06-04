@@ -3,10 +3,13 @@ const initState = {
     currentPage: 0,
     hasMore: true,
     isLoading: false,
+    warning: null,
     err: null,
     search: "",
     field: "",
     sort: "",
+    manager: "",
+    dr: "",
 };
 
 const list = (state = initState, action) => {
@@ -15,8 +18,9 @@ const list = (state = initState, action) => {
             return {
                 ...state,
                 isLoading: true,
+                warning: null,
                 err: null
-            }
+            };
         }
         case "GET_LIST_SUCCESS": {
             return {
@@ -25,21 +29,43 @@ const list = (state = initState, action) => {
                 currentPage: action.currentPage,
                 hasMore: action.hasMore,
                 isLoading: false,
+                warning: null,
                 err: null
-            }
+            };
         }
         case "GET_LIST_FAIL": {
             return {
                 ...state,
                 isLoading: false,
+                warning: null,
                 err: action.err
-            }
+            };
         }
         case "UPDATE_SEARCH": {
             return {
                 ...state,
                 currentPage: 0,
-                search: action.search
+                search: action.search,
+                manager: "",
+                dr: "",
+            };
+        }
+        case "UPDATE_MANAGER": {
+            return {
+                ...state,
+                currentPage: 0,
+                search: "",
+                manager: action.manager,
+                dr: "",
+            }
+        }
+        case "UPDATE_DR": {
+            return {
+                ...state,
+                currentPage: 0,
+                search: "",
+                manager: "",
+                dr: action.dr,
             }
         }
         case "UPDATE_SORT": {
@@ -48,7 +74,7 @@ const list = (state = initState, action) => {
                 currentPage: 0,
                 field: action.field,
                 sort: action.sort,
-            }
+            };
         }
         case "LOAD_ANOTHER_PAGE": {
             return {
@@ -58,28 +84,39 @@ const list = (state = initState, action) => {
                 hasMore: action.hasMore,
                 isLoading: false,
                 err: null,
-            }
+            };
         }
         case "UPDATE_DB_REQUEST": {
             return {
                 ...state,
                 isLoading: true,
+                warning: null,
                 err: null,
-            }
+            };
         }
         case "UPDATE_DB_SUCCCESS": {
             return {
                 ...state,
                 isLoading: false,
+                warning: null,
                 err: null
-            }
+            };
         }
         case "UPADTE_DB_FAIL": {
             return {
                 ...state,
                 isLoading: false,
+                warning: null,
                 err: action.err,
-            }
+            };
+        }
+        case "UPDATE_DB_WARNING": {
+            return {
+                ...state,
+                isLoading: false,
+                warning: action.warning,
+                err: null
+            };
         }
         default: {
             return state;

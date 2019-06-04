@@ -6,6 +6,7 @@
     "antd": "^3.19.1",
     "antd-table-infinity": "^1.1.2",
     "axios": "^0.18.0",
+    "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-redux": "^7.0.3",

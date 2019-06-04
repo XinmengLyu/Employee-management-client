@@ -4,7 +4,7 @@ import { Typography, Form, Input, Select, DatePicker, Button } from 'antd';
 import 'antd/dist/antd.css';
 import Search from './search';
 import Avatar from './avatar';
-import './add.css';
+import '../style.css';
 import { addEmployee } from '../../redux/actions';
 
 class Add extends React.Component {

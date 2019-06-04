@@ -19,15 +19,18 @@ class Search extends React.Component {
     }
 
     handleChange = (value) => {
-        this.props.onChange({target:{value: value}})
+        this.props.onChange({ target: { value: value } })
     }
 
     render() {
         const { data } = this.state;
+        const { value } = this.props;
+        //console.log("Search initial value: ", typeof this.props.value);
         return (
             <Select
                 showSearch
                 allowClear
+                value={typeof value === "object" ? value.name : value}
                 placeholder={this.props.placeholder}
                 style={this.props.style}
                 defaultActiveFirstOption={false}

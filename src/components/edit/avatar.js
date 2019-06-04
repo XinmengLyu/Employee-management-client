@@ -37,14 +37,25 @@ class Avatar extends React.Component {
         }
     };
 
-    render() {
+    uploadLayout = () => {
         const { imageUrl, isLoading } = this.state;
+        const { value } = this.props;
         const uploadButton = (
             <div>
                 <Icon type={isLoading ? 'loading' : 'user'} />
                 <div className="ant-upload-text">Upload</div>
             </div>
         );
+        if(imageUrl){
+            return <img src={imageUrl} alt="avatar" style={{height: "256px", width: "256px"}}/>;
+        }else if (value){
+            return <img src={value} alt="avatar" style={{height: "256px", width: "256px"}}/>;
+        }else {
+            return uploadButton;
+        }
+    };
+
+    render() {
         return (
             <Upload
                 className="avatar-upload"
@@ -55,7 +66,7 @@ class Avatar extends React.Component {
                 beforeUpload={this.beforeUpload}
                 onChange={(info) => this.handleChange(info, this.props.onChange)}
             >
-                {imageUrl ? <img src={imageUrl} alt="avatar" style={{height: "256px", width: "256px"}}/> : uploadButton}
+                {this.uploadLayout()}
             </Upload>
         );
     }

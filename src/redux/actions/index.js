@@ -6,7 +6,7 @@ const decorateData = (data, pageOffset = 0) => {
         return {
             key: index + pageOffset * 10,
             ...user
-        }
+        };
     });
 };
 
@@ -14,7 +14,7 @@ const decorateData = (data, pageOffset = 0) => {
 const getListRequest = () => {
     return {
         type: "GET_LIST_REQUEST",
-    }
+    };
 };
 
 const getListSuccess = (data) => {
@@ -23,21 +23,35 @@ const getListSuccess = (data) => {
         data: data.docs,
         currentPage: data.page,
         hasMore: data.hasNextPage
-    }
+    };
 };
 
 const getListFail = (err) => {
     return {
         type: "GET_LIST_FAIL",
         err: err
-    }
+    };
 };
 
 const updateSearch = (search) => {
     return {
         type: "UPDATE_SEARCH",
         search: search
-    }
+    };
+};
+
+const updateManager = (manager) => {
+    return {
+        type: "UPDATE_MANAGER",
+        manager: manager,
+    };
+};
+
+const updateDR = (dr) => {
+    return {
+        type: "UPDATE_DR",
+        dr: dr,
+    };
 };
 
 const updateSort = (field, sort) => {
@@ -45,7 +59,7 @@ const updateSort = (field, sort) => {
         type: "UPDATE_SORT",
         field: field,
         sort: sort
-    }
+    };
 };
 
 const loadAnotherPage = (data) => {
@@ -54,37 +68,50 @@ const loadAnotherPage = (data) => {
         data: data.docs,
         currentPage: data.page,
         hasMore: data.hasNextPage
-    }
+    };
 };
 
 const updateDBRequest = () => {
     return {
         type: "UPDATE_DB_REQUEST",
-    }
+    };
 };
 
 const updateDBSuccess = () => {
     return {
         type: "UPDATE_DB_SUCCCESS"
-    }
+    };
 };
 
 const updateDBFail = (err) => {
     return {
         type: "UPADTE_DB_FAIL",
         err: err,
-    }
+    };
+};
+
+const updateDBWarning = (warning) => {
+    return {
+        type: "UPDATE_DB_WARNING",
+        warning: warning
+    };
 };
 
 //thunk calls for list
-export const getList = ({sch, fld, st}) => {
+export const getList = ({ sch, fld, st, mng, d }) => {
     return (dispatch, getState) => {
+        if(getState().list.isLoading) return;
+
         dispatch(getListRequest());
         dispatch(updateSearch(sch));
+        if(mng) dispatch(updateManager(mng));
+        if(d) dispatch(updateDR(d));
         dispatch(updateSort(fld, st));
-        const { search, field, sort } = getState().list;
+        const { search, field, sort, manager, dr } = getState().list;
         const url = "http://localhost:8080/api/employees?"
             + (search ? "search=" + search + "&&" : "")
+            + (manager ? "manager=" + manager + "&&" : "")
+            + (dr ? "dr=" + dr + "&&" : "")
             + (field ? "field=" + field + "&&" : "")
             + (sort ? "sort=" + sort : "");
         axios.get(url)
@@ -100,11 +127,13 @@ export const getList = ({sch, fld, st}) => {
 
 export const addPage = () => {
     return (dispatch, getState) => {
-        const { hasMore, search, field, sort, currentPage } = getState().list;
+        const { hasMore, search, manager, dr, field, sort, currentPage } = getState().list;
         if (hasMore) {
             dispatch(getListRequest());
             const url = "http://localhost:8080/api/employees?"
                 + (search ? "search=" + search + "&&" : "")
+                + (manager ? "manager=" + manager + "&&" : "")
+                + (dr ? "dr=" + dr + "&&" : "")
                 + (field ? "field" + field + "&&" : "")
                 + (sort ? "sort" + sort + "&&" : "")
                 + ("page=" + (currentPage + 1));
@@ -132,7 +161,7 @@ export const addEmployee = (employee, history) => {
                 dispatch(updateDBFail(err));
                 window.setTimeout(() => history.push("/"), 5000);
             });
-    }
+    };
 };
 
 export const deleteEmployee = (id) => {
@@ -154,6 +183,60 @@ export const deleteEmployee = (id) => {
             })
             .catch(err => {
                 dispatch(getListFail(err));
+            });
+    };
+};
+
+export const editEmployee = (id, employee, history) => {
+    return (dispatch) => {
+        dispatch(updateDBRequest());
+        axios.put(`http://localhost:8080/api/employees/${id}`, { ...employee })
+            .then(res => {
+                if (res.status === 200){
+                    dispatch(updateDBSuccess());
+                    history.push("/");
+                }else {
+                    dispatch(updateDBWarning(res.data));
+                }
+            })
+            .catch(err => {
+                dispatch(updateDBFail(err));
+                window.setTimeout(() => history.push("/"), 5000);
+            });
+    };
+};
+
+//actions on detail reducer
+const getDetailRequest = () => (
+    {
+        type: "GET_DETAIL_REQUEST"
+    }
+);
+
+const getDetailSuccess = data => (
+    {
+        type: "GET_DETAIL_SUCCESS",
+        data: data
+    }
+);
+
+const getDetailFail = err => (
+    {
+        type: "GET_DETAIL_FAIL",
+        err: err
+    }
+);
+
+export const getDetail = (id, history) => {
+    return (dispatch) => {
+        dispatch(getDetailRequest());
+        axios.get(`http://localhost:8080/api/employees/${id}`)
+            .then((res) => {
+                dispatch(getDetailSuccess(res.data));
+            })
+            .catch((err) => {
+                dispatch(getDetailFail(err));
+                window.setTimeout(() => history.push("/"), 5000);
             });
     };
 };
