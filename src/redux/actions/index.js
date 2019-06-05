@@ -103,7 +103,7 @@ export const getList = ({ sch, fld, st, mng, d }) => {
         if(getState().list.isLoading) return;
 
         dispatch(getListRequest());
-        dispatch(updateSearch(sch));
+        if(sch !== undefined) dispatch(updateSearch(sch));
         if(mng) dispatch(updateManager(mng));
         if(d) dispatch(updateDR(d));
         dispatch(updateSort(fld, st));

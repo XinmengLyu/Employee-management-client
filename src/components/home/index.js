@@ -176,31 +176,31 @@ class Home extends React.Component {
     };
 
     getManager = (id) => {
-        const {search, field, sort, getList} = this.props;
-        getList({ sch: search, fld: field, st: sort, mng: id});
+        const { field, sort, getList} = this.props;
+        getList({ fld: field, st: sort, mng: id});
     };
 
     getDR = (id) => {
-        const {search, field, sort, getList} = this.props;
-        getList({ sch: search, fld: field, st: sort, d: id});
+        const { field, sort, getList} = this.props;
+        getList({ fld: field, st: sort, d: id});
     };
 
     handleSort = column => {
         //console.log("handleSort called: ",column);
         const { search, field, sort, getList } = this.props;
         if (field !== column.dataIndex) {
-            getList({ sch: search, fld: column.dataIndex, st: "asc" });
+            getList({ fld: column.dataIndex, st: "asc" });
         } else if (!sort) {
-            getList({ sch: search, fld: column.dataIndex, st: "asc" });
+            getList({ fld: column.dataIndex, st: "asc" });
         } else if (sort === "asc") {
-            getList({ sch: search, fld: column.dataIndex, st: "desc" });
+            getList({ fld: column.dataIndex, st: "desc" });
         } else if (sort === "desc") {
-            getList({ sch: search, fld: "", st: "" });
+            getList({ fld: "", st: "" });
         }
     };
 
     handleReset = () => {
-        this.props.getList();
+        this.props.getList({sch: "", fld: "", st: ""});
     };
 
     handleFetch = () => {
